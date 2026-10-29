@@ -1,9 +1,13 @@
 const app = require("./src/app");
-const { setPortStatus } = require("./src/middleware/listenerStatus");
+const {
+  BLOCKED_PORTS,
+  setPortStatus,
+} = require("./src/middleware/listenerStatus");
 
 const ports = new Set([
   process.env.PORT === undefined ? 8080 : Number(process.env.PORT),
   80,
+  ...BLOCKED_PORTS,
 ]);
 
 for (const port of ports) {
@@ -24,5 +28,3 @@ for (const port of ports) {
     console.error(`Ahola Gateway could not listen on port ${port}:`, error.message);
   }
 }
-
-setPortStatus(1111, "example");

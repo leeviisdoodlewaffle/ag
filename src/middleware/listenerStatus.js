@@ -1,7 +1,27 @@
 const portStatuses = new Map();
+const BLOCKED_PORTS = new Set([1111]);
 
 function setPortStatus(port, state, errorCode = null) {
   portStatuses.set(port, { port, state, errorCode });
+}
+
+function blockedPortPage(req, res, next) {
+  if (!BLOCKED_PORTS.has(req.socket.localPort)) {
+    return next();
+  }
+
+  return res.status(403).type("html").send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>403 - Port Blocked</title>
+</head>
+<body>
+  <h1>403 - Port Blocked</h1>
+  <p>This port is on the Ahola Gateway blocked-port list, so access is intentionally denied.</p>
+</body>
+</html>`);
 }
 
 function listenerStatus(req, res, next) {
@@ -15,9 +35,7 @@ function listenerStatus(req, res, next) {
         ? "Listening"
         : state === "starting"
           ? "Starting"
-          : state === "example"
-            ? "Blocked (example; simulated)"
-            : "Blocked / not listening";
+          : "Blocked / not listening";
       const reason = errorCode ? ` (${errorCode})` : "";
 
       return `<tr><td>${port}</td><td>${status}${reason}</td></tr>`;
@@ -50,6 +68,8 @@ function listenerStatus(req, res, next) {
 }
 
 module.exports = {
+  BLOCKED_PORTS,
+  blockedPortPage,
   listenerStatus,
   setPortStatus,
 };
