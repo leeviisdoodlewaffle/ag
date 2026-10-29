@@ -15,162 +15,101 @@ function blockedPortPage(req, res, next) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101522">
-  <title>Access denied · Ahola Gateway</title>
+  <title>403 - Access Denied</title>
   <style>
-    :root {
-      color-scheme: dark;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #101522;
-      color: #f3f5fa;
-      font-synthesis: none;
-      text-rendering: optimizeLegibility;
-    }
-    * { box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      display: grid;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #fff;
+      color: #333;
       min-height: 100vh;
-      margin: 0;
-      padding: 32px 20px;
-      place-items: center;
-      background:
-        radial-gradient(ellipse at 50% 0%, rgba(108, 91, 214, 0.2), transparent 55%),
-        #101522;
-    }
-    .card {
-      display: grid;
-      grid-template-columns: 220px minmax(0, 1fr);
+      display: flex;
       align-items: center;
-      gap: 34px;
-      width: min(100%, 820px);
-      padding: 42px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 28px;
-      background: rgba(24, 31, 47, 0.92);
-      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+      justify-content: center;
+      padding: 2rem;
     }
-    .mascot {
-      width: 100%;
-      overflow: visible;
-      filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.28));
+    .container { max-width: 820px; width: 100%; }
+    .header { margin-bottom: 2.5rem; }
+    .title { font-size: 3rem; font-weight: 700; color: #333; }
+    .error-badge {
+      display: inline-block;
+      margin-left: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #dcdcdc;
+      color: #777;
+      font-size: 0.8rem;
+      vertical-align: middle;
     }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 28px;
-      color: #c6cbe0;
-      font-size: 0.9rem;
-      font-weight: 650;
-      letter-spacing: 0.04em;
+    .subtitle { margin-top: 0.5rem; font-size: 1rem; color: #555; }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin: 2rem 0;
     }
-    .brand-mark {
-      display: grid;
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      background: #7667e8;
-      color: white;
-      font-size: 1.15rem;
-      place-items: center;
-    }
-    .eyebrow {
-      margin: 0 0 10px;
-      color: #ffc26b;
-      font-size: 0.76rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 8vw, 2.7rem);
-      letter-spacing: -0.055em;
-      line-height: 1.1;
-    }
-    .description {
-      margin: 14px 0 24px;
-      color: #aeb6c9;
-      font-size: 1rem;
-      line-height: 1.7;
-    }
-    .port {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 11px 15px;
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 999px;
-      background: rgba(9, 13, 22, 0.42);
-      color: #e5e8f1;
-      font-size: 0.88rem;
-    }
-    .port-dot {
-      width: 7px;
-      height: 7px;
+    .status-item { flex: 1; text-align: center; }
+    .status-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 0.75rem;
       border-radius: 50%;
-      background: #ffc26b;
-      box-shadow: 0 0 12px rgba(255, 194, 107, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
     }
-    .footer {
-      margin: 24px 0 0;
-      color: #747e94;
-      font-size: 0.78rem;
-    }
-    @media (max-width: 640px) {
-      body { padding: 20px 14px; }
-      .card {
-        grid-template-columns: 1fr;
-        gap: 4px;
-        max-width: 460px;
-        padding: 28px 24px;
-        border-radius: 22px;
-        text-align: center;
-      }
-      .mascot { width: min(190px, 62%); margin: 0 auto; }
-      .brand { margin-bottom: 16px; }
-      .port { justify-content: center; }
-      .footer { margin-top: 20px; }
+    .status-icon.ok { background: #d4edda; color: #28a745; }
+    .status-icon.error { background: #f8d7da; color: #dc3545; }
+    .status-label { font-size: 0.85rem; color: #888; margin-top: 0.25rem; }
+    .status-value { font-size: 0.95rem; color: #333; font-weight: 600; margin-top: 0.15rem; }
+    .section-title { font-size: 1.1rem; font-weight: 600; color: #222; margin-bottom: 0.5rem; }
+    .section-text { font-size: 0.95rem; color: #555; line-height: 1.5; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; }
+    .footer { margin-top: 2.5rem; text-align: center; font-size: 0.8rem; color: #999; }
+    @media (max-width: 560px) {
+      body { padding: 1.5rem; }
+      .columns { grid-template-columns: 1fr; gap: 1.25rem; }
+      .header { margin-bottom: 2rem; }
+      .title { font-size: 2.5rem; }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <svg class="mascot" viewBox="0 0 240 260" role="img" aria-label="A little orange fox guarding the blocked port" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="fox-coat" x1="52" y1="30" x2="180" y2="224" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFD166"/>
-          <stop offset=".52" stop-color="#FF914D"/>
-          <stop offset="1" stop-color="#F05D5E"/>
-        </linearGradient>
-        <linearGradient id="fox-tail" x1="34" y1="104" x2="112" y2="207" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFB84D"/>
-          <stop offset="1" stop-color="#FF6B58"/>
-        </linearGradient>
-      </defs>
-      <circle cx="120" cy="126" r="103" fill="#8068E8" opacity=".12"/>
-      <path d="M38 193c-19-9-24-25-14-36 8-9 22-8 31-2-9-16-3-31 10-33 12-2 22 9 23 24 19 2 34 14 39 31l-89 16Z" fill="url(#fox-tail)" stroke="#FFC16B" stroke-width="3" stroke-linejoin="round"/>
-      <path d="M30 168c4-8 12-11 20-7 8 4 11 13 8 21-7 1-15-1-21-5-5-3-7-6-7-9Z" fill="#FFF0D7"/>
-      <path d="M74 202c5-25 22-43 46-43s42 18 47 43l-7 24H81l-7-24Z" fill="url(#fox-coat)" stroke="#FFB45F" stroke-width="3" stroke-linejoin="round"/>
-      <path d="M92 222c4-22 13-38 28-38s25 16 29 38H92Z" fill="#FFF0D7"/>
-      <path d="m76 91 5-49c1-8 10-11 15-4l26 34 27-34c5-7 14-4 15 4l5 49c2 33-18 58-46 58S74 124 76 91Z" fill="url(#fox-coat)" stroke="#FFC16B" stroke-width="3" stroke-linejoin="round"/>
-      <path d="m87 82 2-27 17 24c-7 0-13 1-19 3Zm67-3 17-24 2 27c-6-2-12-3-19-3Z" fill="#FF7180"/>
-      <path d="M90 111c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Zm43 0c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Z" fill="#322846"/>
-      <circle cx="102" cy="108" r="2.5" fill="white"/><circle cx="145" cy="108" r="2.5" fill="white"/>
-      <ellipse cx="86" cy="128" rx="10" ry="6" fill="#FF9B9D" opacity=".8"/><ellipse cx="159" cy="128" rx="10" ry="6" fill="#FF9B9D" opacity=".8"/>
-      <path d="M112 129c0-4 4-7 8-7s8 3 8 7c0 3-4 6-8 6s-8-3-8-6Z" fill="#75445C"/>
-      <path d="M120 135c-1 6-6 8-11 5m11-5c1 6 6 8 11 5" fill="none" stroke="#75445C" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M72 225h96" stroke="#8068E8" stroke-width="7" stroke-linecap="round"/>
-      <path d="m48 68 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Zm145 47 2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z" fill="#FFE18A"/>
-    </svg>
-    <section>
-      <div class="brand"><span class="brand-mark" aria-hidden="true">A</span> AHOLA GATEWAY</div>
-      <p class="eyebrow">403 · Access restricted</p>
-      <h1>This port is blocked</h1>
-      <p class="description">Our little gatekeeper fox says this port is on the blocked list, so this request can’t come through.</p>
-      <div class="port"><span class="port-dot" aria-hidden="true"></span>Port ${req.socket.localPort} · Access denied</div>
-      <p class="footer">The fox is keeping the gateway cozy and safe.</p>
+  <main class="container">
+    <header class="header">
+      <div>
+        <span class="title">403</span>
+        <span class="error-badge">Error code 403</span>
+      </div>
+      <p class="subtitle">This port is not available on this Ahola node.</p>
+    </header>
+
+    <section class="status-row" aria-label="Connection status">
+      <div class="status-item">
+        <div class="status-icon ok" aria-hidden="true">&#10003;</div>
+        <div class="status-label">Browser</div>
+        <div class="status-value">Working</div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon error" aria-hidden="true">&#10007;</div>
+        <div class="status-label">Ahola Gateway</div>
+        <div class="status-value">Access denied</div>
+      </div>
     </section>
+
+    <section class="columns">
+      <div>
+        <h2 class="section-title">What happened?</h2>
+        <p class="section-text">Port ${req.socket.localPort} is on this node’s blocked-port list, so the gateway denied the request.</p>
+      </div>
+      <div>
+        <h2 class="section-title">What can I do?</h2>
+        <p class="section-text">Check the address and port. If you believe this port should be available, contact the node operator.</p>
+      </div>
+    </section>
+
+    <footer class="footer">Ahola Node</footer>
   </main>
 </body>
 </html>`);
