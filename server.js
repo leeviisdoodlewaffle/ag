@@ -24,3 +24,5 @@ for (const port of ports) {
     console.error(`Ahola Gateway could not listen on port ${port}:`, error.message);
   }
 }
+
+setPortStatus(1111, "example");

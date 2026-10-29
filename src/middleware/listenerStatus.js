@@ -11,7 +11,13 @@ function listenerStatus(req, res, next) {
 
   const rows = [...portStatuses.values()]
     .map(({ port, state, errorCode }) => {
-      const status = state === "listening" ? "Listening" : state === "starting" ? "Starting" : "Blocked / not listening";
+      const status = state === "listening"
+        ? "Listening"
+        : state === "starting"
+          ? "Starting"
+          : state === "example"
+            ? "Blocked (example; simulated)"
+            : "Blocked / not listening";
       const reason = errorCode ? ` (${errorCode})` : "";
 
       return `<tr><td>${port}</td><td>${status}${reason}</td></tr>`;
