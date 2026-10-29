@@ -197,7 +197,137 @@ function renderUnknownRoute(req, res) {
 </html>`);
 }
 
+function renderGatewayError(req, res, statusCode) {
+  const errorContent = statusCode === 413
+    ? {
+      title: "Request too large",
+      subtitle: "The request exceeds the size limit for this gateway.",
+      happened: "The gateway stopped this request because its payload is larger than the allowed limit.",
+      action: "Reduce the request size and try again. If you operate this node, review the gateway request-size settings.",
+    }
+    : statusCode === 400
+      ? {
+        title: "Invalid request",
+        subtitle: "The gateway could not process this request.",
+        happened: "The request was incomplete or formatted in a way the gateway could not understand.",
+        action: "Check the address and request, then try again.",
+      }
+      : statusCode === 502
+        ? {
+          title: "Service unavailable",
+          subtitle: "The gateway could not connect to the app behind this address.",
+          happened: "The configured service may be offline or unreachable from this node.",
+          action: "Wait a moment and try again. If the problem continues, contact the node operator.",
+        }
+        : {
+          title: "Gateway error",
+          subtitle: "The gateway could not complete this request.",
+          happened: "An unexpected error occurred while processing the request.",
+          action: "Try again in a moment. If the problem continues, contact the node operator.",
+        };
+
+  return res.status(statusCode).send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${statusCode} - ${errorContent.title}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #fff;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container { max-width: 820px; width: 100%; }
+    .header { margin-bottom: 2.5rem; }
+    .title { font-size: 3rem; font-weight: 700; color: #333; }
+    .error-badge {
+      display: inline-block;
+      margin-left: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #dcdcdc;
+      color: #777;
+      font-size: 0.8rem;
+      vertical-align: middle;
+    }
+    .subtitle { margin-top: 0.5rem; font-size: 1rem; color: #555; }
+    .status-row { display: flex; justify-content: space-between; gap: 1.5rem; margin: 2rem 0; }
+    .status-item { flex: 1; text-align: center; }
+    .status-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 0.75rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+    }
+    .status-icon.ok { background: #d4edda; color: #28a745; }
+    .status-icon.error { background: #f8d7da; color: #dc3545; }
+    .status-label { font-size: 0.85rem; color: #888; margin-top: 0.25rem; }
+    .status-value { font-size: 0.95rem; color: #333; font-weight: 600; margin-top: 0.15rem; }
+    .section-title { font-size: 1.1rem; font-weight: 600; color: #222; margin-bottom: 0.5rem; }
+    .section-text { font-size: 0.95rem; color: #555; line-height: 1.5; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; }
+    .footer { margin-top: 2.5rem; text-align: center; font-size: 0.8rem; color: #999; }
+    @media (max-width: 560px) {
+      body { padding: 1.5rem; }
+      .columns { grid-template-columns: 1fr; gap: 1.25rem; }
+      .header { margin-bottom: 2rem; }
+      .title { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <div>
+        <span class="title">${statusCode}</span>
+        <span class="error-badge">Error code ${statusCode}</span>
+      </div>
+      <p class="subtitle">${errorContent.subtitle}</p>
+    </header>
+
+    <section class="status-row" aria-label="Connection status">
+      <div class="status-item">
+        <div class="status-icon ok" aria-hidden="true">&#10003;</div>
+        <div class="status-label">Browser</div>
+        <div class="status-value">Working</div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon error" aria-hidden="true">&#10007;</div>
+        <div class="status-label">Ahola Gateway</div>
+        <div class="status-value">Error</div>
+      </div>
+    </section>
+
+    <section class="columns">
+      <div>
+        <h2 class="section-title">What happened?</h2>
+        <p class="section-text">${errorContent.happened}</p>
+      </div>
+      <div>
+        <h2 class="section-title">What can I do?</h2>
+        <p class="section-text">${errorContent.action}</p>
+      </div>
+    </section>
+
+    <footer class="footer">Ahola Node</footer>
+  </main>
+</body>
+</html>`);
+}
+
 module.exports = {
+  renderGatewayError,
   renderRateLimitPage,
   renderUnknownRoute,
 };

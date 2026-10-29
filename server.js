@@ -3,6 +3,7 @@ const {
   BLOCKED_PORTS,
   setPortStatus,
 } = require("./src/middleware/listenerStatus");
+const { logError, logInfo } = require("./src/utils/logger");
 
 const ports = new Set([
   process.env.PORT === undefined ? 8080 : Number(process.env.PORT),
@@ -16,15 +17,23 @@ for (const port of ports) {
   try {
     const server = app.listen(port, () => {
       setPortStatus(port, "listening");
-      console.log(`Ahola Gateway running :${port}`);
+      logInfo("listener_ready", { port });
     });
 
     server.on("error", (error) => {
       setPortStatus(port, "blocked", error.code || "LISTEN_ERROR");
-      console.error(`Ahola Gateway could not listen on port ${port}:`, error.message);
+      logError("listener_failed", {
+        port,
+        code: error.code || "LISTEN_ERROR",
+        message: error.message,
+      });
     });
   } catch (error) {
     setPortStatus(port, "blocked", error.code || "LISTEN_ERROR");
-    console.error(`Ahola Gateway could not listen on port ${port}:`, error.message);
+    logError("listener_failed", {
+      port,
+      code: error.code || "LISTEN_ERROR",
+      message: error.message,
+    });
   }
 }

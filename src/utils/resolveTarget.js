@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { logError } = require("./logger");
 
 function resolveTarget(host, routes, appsDir = path.join(process.env.HOME || "", "ahola", "apps")) {
   if (routes[host]) {
@@ -22,7 +23,10 @@ function resolveTarget(host, routes, appsDir = path.join(process.env.HOME || "",
     const config = JSON.parse(fs.readFileSync(appConfigPath, "utf8"));
     return config.target || null;
   } catch (error) {
-    console.error("Failed to parse app config", appConfigPath, error.message);
+    logError("app_config_invalid", {
+      configPath: appConfigPath,
+      message: error.message,
+    });
     return null;
   }
 }
