@@ -38,19 +38,27 @@ function blockedPortPage(req, res, next) {
         #101522;
     }
     .card {
-      width: min(100%, 520px);
-      padding: 48px;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      align-items: center;
+      gap: 34px;
+      width: min(100%, 820px);
+      padding: 42px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
+      border-radius: 28px;
       background: rgba(24, 31, 47, 0.92);
       box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
-      text-align: center;
+    }
+    .mascot {
+      width: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.28));
     }
     .brand {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 36px;
+      margin-bottom: 28px;
       color: #c6cbe0;
       font-size: 0.9rem;
       font-weight: 650;
@@ -66,19 +74,8 @@ function blockedPortPage(req, res, next) {
       font-size: 1.15rem;
       place-items: center;
     }
-    .icon {
-      display: grid;
-      width: 88px;
-      height: 88px;
-      margin: 0 auto 24px;
-      border: 1px solid rgba(255, 194, 107, 0.24);
-      border-radius: 26px;
-      background: rgba(255, 194, 107, 0.09);
-      color: #ffc26b;
-      place-items: center;
-    }
     .eyebrow {
-      margin: 0 0 12px;
+      margin: 0 0 10px;
       color: #ffc26b;
       font-size: 0.76rem;
       font-weight: 700;
@@ -92,7 +89,7 @@ function blockedPortPage(req, res, next) {
       line-height: 1.1;
     }
     .description {
-      margin: 16px 0 28px;
+      margin: 14px 0 24px;
       color: #aeb6c9;
       font-size: 1rem;
       line-height: 1.7;
@@ -116,30 +113,64 @@ function blockedPortPage(req, res, next) {
       box-shadow: 0 0 12px rgba(255, 194, 107, 0.65);
     }
     .footer {
-      margin: 36px 0 0;
+      margin: 24px 0 0;
       color: #747e94;
       font-size: 0.78rem;
     }
-    @media (max-width: 480px) {
-      .card { padding: 36px 24px; border-radius: 20px; }
-      .brand { margin-bottom: 30px; }
+    @media (max-width: 640px) {
+      body { padding: 20px 14px; }
+      .card {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        max-width: 460px;
+        padding: 28px 24px;
+        border-radius: 22px;
+        text-align: center;
+      }
+      .mascot { width: min(190px, 62%); margin: 0 auto; }
+      .brand { margin-bottom: 16px; }
+      .port { justify-content: center; }
+      .footer { margin-top: 20px; }
     }
   </style>
 </head>
 <body>
   <main class="card">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">A</span> AHOLA GATEWAY</div>
-    <div class="icon" aria-hidden="true">
-      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3 19 6v5c0 4.7-2.9 8.2-7 10-4.1-1.8-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-        <path d="M9.5 10V8.8a2.5 2.5 0 0 1 5 0V10m-5.7 0h6.4v5.2H8.8V10Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <p class="eyebrow">403 · Access restricted</p>
-    <h1>This port is blocked</h1>
-    <p class="description">This port is on the gateway’s blocked-port list. The request was denied to protect this service.</p>
-    <div class="port"><span class="port-dot" aria-hidden="true"></span>Port ${req.socket.localPort} · Access denied</div>
-    <p class="footer">Protected by Ahola Gateway</p>
+    <svg class="mascot" viewBox="0 0 240 260" role="img" aria-label="A little orange fox guarding the blocked port" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="fox-coat" x1="52" y1="30" x2="180" y2="224" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FFD166"/>
+          <stop offset=".52" stop-color="#FF914D"/>
+          <stop offset="1" stop-color="#F05D5E"/>
+        </linearGradient>
+        <linearGradient id="fox-tail" x1="34" y1="104" x2="112" y2="207" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FFB84D"/>
+          <stop offset="1" stop-color="#FF6B58"/>
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="126" r="103" fill="#8068E8" opacity=".12"/>
+      <path d="M38 193c-19-9-24-25-14-36 8-9 22-8 31-2-9-16-3-31 10-33 12-2 22 9 23 24 19 2 34 14 39 31l-89 16Z" fill="url(#fox-tail)" stroke="#FFC16B" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M30 168c4-8 12-11 20-7 8 4 11 13 8 21-7 1-15-1-21-5-5-3-7-6-7-9Z" fill="#FFF0D7"/>
+      <path d="M74 202c5-25 22-43 46-43s42 18 47 43l-7 24H81l-7-24Z" fill="url(#fox-coat)" stroke="#FFB45F" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M92 222c4-22 13-38 28-38s25 16 29 38H92Z" fill="#FFF0D7"/>
+      <path d="m76 91 5-49c1-8 10-11 15-4l26 34 27-34c5-7 14-4 15 4l5 49c2 33-18 58-46 58S74 124 76 91Z" fill="url(#fox-coat)" stroke="#FFC16B" stroke-width="3" stroke-linejoin="round"/>
+      <path d="m87 82 2-27 17 24c-7 0-13 1-19 3Zm67-3 17-24 2 27c-6-2-12-3-19-3Z" fill="#FF7180"/>
+      <path d="M90 111c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Zm43 0c0-5 4-9 9-9s9 4 9 9-4 9-9 9-9-4-9-9Z" fill="#322846"/>
+      <circle cx="102" cy="108" r="2.5" fill="white"/><circle cx="145" cy="108" r="2.5" fill="white"/>
+      <ellipse cx="86" cy="128" rx="10" ry="6" fill="#FF9B9D" opacity=".8"/><ellipse cx="159" cy="128" rx="10" ry="6" fill="#FF9B9D" opacity=".8"/>
+      <path d="M112 129c0-4 4-7 8-7s8 3 8 7c0 3-4 6-8 6s-8-3-8-6Z" fill="#75445C"/>
+      <path d="M120 135c-1 6-6 8-11 5m11-5c1 6 6 8 11 5" fill="none" stroke="#75445C" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M72 225h96" stroke="#8068E8" stroke-width="7" stroke-linecap="round"/>
+      <path d="m48 68 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Zm145 47 2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z" fill="#FFE18A"/>
+    </svg>
+    <section>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">A</span> AHOLA GATEWAY</div>
+      <p class="eyebrow">403 · Access restricted</p>
+      <h1>This port is blocked</h1>
+      <p class="description">Our little gatekeeper fox says this port is on the blocked list, so this request can’t come through.</p>
+      <div class="port"><span class="port-dot" aria-hidden="true"></span>Port ${req.socket.localPort} · Access denied</div>
+      <p class="footer">The fox is keeping the gateway cozy and safe.</p>
+    </section>
   </main>
 </body>
 </html>`);
