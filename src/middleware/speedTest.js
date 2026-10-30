@@ -23,79 +23,144 @@ function sendSpeedTestPage(res) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f7f7fb">
+  <meta name="theme-color" content="#ffffff">
   <title>Connection speed test · Ahola</title>
   <style>
-    * { box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       min-height: 100vh;
-      margin: 0;
-      padding: 48px 20px;
-      background: #f7f7fb;
-      color: #242337;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    main { width: min(100%, 760px); margin: 0 auto; }
-    .brand { color: #6b63c8; font-size: .82rem; font-weight: 750; letter-spacing: .12em; }
-    h1 { margin: 18px 0 8px; font-size: clamp(2rem, 6vw, 3rem); letter-spacing: -.055em; }
-    .intro { margin: 0; color: #6e6c7d; line-height: 1.6; }
-    .panel {
-      margin-top: 32px;
-      padding: 32px;
-      border: 1px solid #e8e7f0;
-      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
       background: #fff;
-      box-shadow: 0 14px 40px rgba(37, 33, 75, .06);
+      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
-    .results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .result { min-width: 0; padding: 20px 14px; border-radius: 14px; background: #f7f6fc; text-align: center; }
-    .value { display: block; min-height: 2.4rem; color: #39365d; font-size: clamp(1.45rem, 5vw, 2rem); font-weight: 700; letter-spacing: -.04em; }
-    .unit { color: #8c899e; font-size: .78rem; font-weight: 500; letter-spacing: 0; }
-    .label { display: block; margin-top: 8px; color: #777487; font-size: .82rem; }
-    .actions { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+    main { width: 100%; max-width: 820px; }
+    .header { margin-bottom: 2.5rem; }
+    .eyebrow { margin-bottom: .65rem; color: #777; font-size: .82rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { color: #333; font-size: clamp(2.2rem, 7vw, 3rem); font-weight: 700; letter-spacing: -.045em; }
+    .intro { margin-top: .6rem; color: #555; font-size: 1rem; line-height: 1.55; }
+    .status-row { display: flex; gap: 1.5rem; margin: 2rem 0; }
+    .status-item { flex: 1; text-align: center; }
+    .status-icon {
+      display: flex;
+      width: 64px;
+      height: 64px;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto .75rem;
+      border-radius: 50%;
+      background: #d4edda;
+      color: #28a745;
+      font-size: 1.75rem;
+    }
+    .status-label { margin-top: .25rem; color: #888; font-size: .85rem; }
+    .status-value { margin-top: .15rem; color: #333; font-size: .95rem; font-weight: 600; }
+    .section-title { margin-bottom: .5rem; color: #222; font-size: 1.1rem; font-weight: 600; }
+    .section-text { color: #555; font-size: .95rem; line-height: 1.5; }
+    .results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 1.5rem 0;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .result { min-width: 0; padding: 1.35rem 1rem; text-align: center; }
+    .result + .result { border-left: 1px solid #e5e5e5; }
+    .value { display: block; min-height: 2.5rem; color: #333; font-size: clamp(1.6rem, 5vw, 2rem); font-weight: 700; letter-spacing: -.035em; }
+    .unit { color: #888; font-size: .78rem; font-weight: 500; letter-spacing: 0; }
+    .label { display: block; margin-top: .35rem; color: #777; font-size: .85rem; }
+    .actions { display: flex; align-items: center; gap: 1rem; margin-top: 1.25rem; }
     button {
-      min-height: 46px;
-      padding: 0 22px;
+      min-height: 42px;
+      padding: 0 1.25rem;
       border: 0;
-      border-radius: 10px;
-      background: #7168d8;
-      color: #fff;
+      border-radius: 999px;
+      background: #b89af7;
+      color: #211a35;
       font: inherit;
-      font-weight: 650;
+      font-weight: 600;
       cursor: pointer;
     }
-    button:hover:not(:disabled) { background: #5f56c5; }
-    button:focus-visible { outline: 3px solid #bcb7ff; outline-offset: 3px; }
+    button:hover:not(:disabled) { background: #a986f0; }
+    button:focus-visible { outline: 3px solid #d5c6ff; outline-offset: 3px; }
     button:disabled { cursor: wait; opacity: .65; }
-    #status { color: #777487; font-size: .88rem; }
+    #status { color: #777; font-size: .9rem; }
     #status.error { color: #b42335; }
-    .note { margin: 22px 0 0; color: #9996a8; font-size: .8rem; line-height: 1.55; }
-    @media (max-width: 520px) {
-      body { padding: 30px 16px; }
-      .panel { padding: 20px 14px; }
-      .results { gap: 8px; }
-      .result { padding: 16px 8px; }
-      .actions { align-items: flex-start; flex-direction: column; gap: 12px; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.75rem; }
+    .server-info { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid #e5e5e5; }
+    .info-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: .9rem; }
+    .info-item { min-width: 0; }
+    .info-label { display: block; margin-bottom: .3rem; color: #888; font-size: .78rem; }
+    .info-value { display: block; overflow-wrap: anywhere; color: #333; font-size: .9rem; font-weight: 600; }
+    .footer { margin-top: 2.5rem; color: #999; font-size: .8rem; text-align: center; }
+    @media (max-width: 560px) {
+      body { padding: 1.5rem; }
+      .header { margin-bottom: 2rem; }
+      .results { grid-template-columns: 1fr; }
+      .result { padding: 1rem; }
+      .result + .result { border-top: 1px solid #e5e5e5; border-left: 0; }
+      .columns { grid-template-columns: 1fr; gap: 1.25rem; }
+      .actions { align-items: flex-start; flex-direction: column; }
+      .info-list { grid-template-columns: 1fr; gap: .75rem; }
     }
   </style>
 </head>
 <body>
   <main>
-    <div class="brand">AHOLA · CONNECTION TEST</div>
-    <h1>How fast is your connection?</h1>
+    <header class="header">
+      <p class="eyebrow">Ahola Node · Connection test</p>
+      <h1>Connection speed test</h1>
     <p class="intro">Measure your connection to this server with a quick download, upload, and response-time test.</p>
-    <section class="panel" aria-label="Speed test">
+    </header>
+    <section aria-label="Speed test">
+      <div class="status-row" aria-label="Connection status">
+        <div class="status-item">
+          <div class="status-icon" aria-hidden="true">&#10003;</div>
+          <div class="status-label">Browser</div>
+          <div class="status-value">Connected</div>
+        </div>
+        <div class="status-item">
+          <div class="status-icon" aria-hidden="true">&#10003;</div>
+          <div class="status-label">Ahola Node</div>
+          <div class="status-value">Ready to test</div>
+        </div>
+      </div>
+      <h2 class="section-title">Your results</h2>
+      <p class="section-text">Run the test to measure HTTP round-trip time and transfer speed between this browser and the server.</p>
       <div class="results" aria-live="polite">
-        <div class="result"><span class="value" id="latency">—</span><span class="label">Latency <span class="unit">ms</span></span></div>
-        <div class="result"><span class="value" id="download">—</span><span class="label">Download <span class="unit">Mbps</span></span></div>
-        <div class="result"><span class="value" id="upload">—</span><span class="label">Upload <span class="unit">Mbps</span></span></div>
+        <div class="result"><span class="value" id="latency">— <span class="unit">ms</span></span><span class="label">Latency</span></div>
+        <div class="result"><span class="value" id="download">— <span class="unit">Mbps</span></span><span class="label">Download</span></div>
+        <div class="result"><span class="value" id="upload">— <span class="unit">Mbps</span></span><span class="label">Upload</span></div>
       </div>
       <div class="actions">
         <button id="start" type="button">Start test</button>
         <span id="status" role="status">Ready when you are.</span>
       </div>
-      <p class="note">The test transfers up to 10 MB down and 5 MB up. Results measure this browser’s connection to the Ahola server and may use your data allowance.</p>
+      <div class="columns">
+        <div>
+          <h2 class="section-title">What is measured?</h2>
+          <p class="section-text">Latency is the median HTTP response time across seven requests after a warm-up. It is not ICMP ping. Download and upload show data transfer speed to this Ahola node.</p>
+        </div>
+        <div>
+          <h2 class="section-title">About this test</h2>
+          <p class="section-text">The test transfers up to 10 MB down and 5 MB up. Results are approximate and may use your data allowance.</p>
+        </div>
+      </div>
+      <div class="server-info">
+        <h2 class="section-title">Server information</h2>
+        <p class="section-text">Details about the endpoint this browser is currently testing.</p>
+        <div class="info-list" aria-live="polite">
+          <div class="info-item"><span class="info-label">Endpoint</span><span class="info-value" id="server-endpoint">Loading…</span></div>
+          <div class="info-item"><span class="info-label">Service</span><span class="info-value" id="server-service">Loading…</span></div>
+          <div class="info-item"><span class="info-label">Server time</span><span class="info-value" id="server-time">Loading…</span></div>
+        </div>
+      </div>
     </section>
+    <footer class="footer">Ahola Node</footer>
   </main>
   <script>
     const button = document.getElementById("start");
@@ -104,9 +169,14 @@ function sendSpeedTestPage(res) {
     const downloadValue = document.getElementById("download");
     const uploadValue = document.getElementById("upload");
 
+    function median(values) {
+      const sorted = [...values].sort((left, right) => left - right);
+      return sorted[Math.floor(sorted.length / 2)];
+    }
+
     function setMbps(element, bytes, milliseconds) {
       const megabitsPerSecond = (bytes * 8) / (milliseconds * 1000);
-      element.textContent = megabitsPerSecond.toFixed(1);
+      element.innerHTML = megabitsPerSecond.toFixed(1) + ' <span class="unit">Mbps</span>';
     }
 
     function makeUploadData(size) {
@@ -120,20 +190,23 @@ function sendSpeedTestPage(res) {
     async function runTest() {
       button.disabled = true;
       status.classList.remove("error");
-      latencyValue.textContent = "…";
-      downloadValue.textContent = "…";
-      uploadValue.textContent = "…";
+      latencyValue.innerHTML = '… <span class="unit">ms</span>';
+      downloadValue.innerHTML = '… <span class="unit">Mbps</span>';
+      uploadValue.innerHTML = '… <span class="unit">Mbps</span>';
 
       try {
         status.textContent = "Measuring response time…";
+        const warmup = await fetch("/ping?warmup=" + Date.now(), { cache: "no-store" });
+        if (!warmup.ok) throw new Error("The server did not respond to the warm-up request.");
+
         const samples = [];
-        for (let index = 0; index < 3; index += 1) {
+        for (let index = 0; index < 7; index += 1) {
           const started = performance.now();
           const response = await fetch("/ping?sample=" + index + "&t=" + Date.now(), { cache: "no-store" });
           if (!response.ok) throw new Error("The server did not respond to the ping.");
           samples.push(performance.now() - started);
         }
-        latencyValue.textContent = Math.round(samples.reduce((sum, sample) => sum + sample, 0) / samples.length);
+        latencyValue.innerHTML = Math.round(median(samples)) + ' <span class="unit">ms</span>';
 
         status.textContent = "Testing download…";
         const downloadBytes = 10 * 1024 * 1024;
@@ -164,7 +237,28 @@ function sendSpeedTestPage(res) {
       }
     }
 
+    async function loadServerInfo() {
+      const endpoint = document.getElementById("server-endpoint");
+      const service = document.getElementById("server-service");
+      const serverTime = document.getElementById("server-time");
+
+      endpoint.textContent = location.host + " (" + location.protocol.replace(":", "").toUpperCase() + ")";
+
+      try {
+        const response = await fetch("/info", { cache: "no-store" });
+        if (!response.ok) throw new Error("Could not load server information.");
+        const info = await response.json();
+        service.textContent = info.service + " · port " + info.port;
+        serverTime.textContent = new Date(info.serverTime).toLocaleString();
+      } catch (error) {
+        service.textContent = "Unavailable";
+        serverTime.textContent = "Could not load";
+        status.textContent = error.message || "Server details are unavailable.";
+      }
+    }
+
     button.addEventListener("click", runTest);
+    loadServerInfo();
   </script>
 </body>
 </html>`);
@@ -181,6 +275,14 @@ function speedTest(req, res, next) {
 
   if (req.method === "GET" && req.path === "/ping") {
     return res.status(204).set("Cache-Control", "no-store").end();
+  }
+
+  if (req.method === "GET" && req.path === "/info") {
+    return res.set("Cache-Control", "no-store").json({
+      service: "Ahola Speed Test",
+      port: req.socket.localPort,
+      serverTime: new Date().toISOString(),
+    });
   }
 
   if (req.method === "GET" && req.path === "/download") {
