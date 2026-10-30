@@ -8,6 +8,7 @@ const {
   listenerStatus,
 } = require("./middleware/listenerStatus");
 const { rateLimit } = require("./middleware/rateLimit");
+const { speedTest } = require("./middleware/speedTest");
 const { resolveTarget } = require("./utils/resolveTarget");
 const {
   renderGatewayError,
@@ -50,6 +51,7 @@ app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(blockedPortPage);
 app.use(listenerStatus);
 app.use(rateLimit);
+app.use(speedTest);
 
 app.use((req, res, next) => {
   const host = req.hostname;

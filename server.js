@@ -3,11 +3,13 @@ const {
   BLOCKED_PORTS,
   setPortStatus,
 } = require("./src/middleware/listenerStatus");
+const { SPEED_TEST_PORT } = require("./src/middleware/speedTest");
 const { logError, logInfo } = require("./src/utils/logger");
 
 const ports = new Set([
   process.env.PORT === undefined ? 8080 : Number(process.env.PORT),
   80,
+  SPEED_TEST_PORT,
   ...BLOCKED_PORTS,
 ]);
 
