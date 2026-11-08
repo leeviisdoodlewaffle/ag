@@ -9,6 +9,7 @@ const {
 } = require("./middleware/listenerStatus");
 const { rateLimit } = require("./middleware/rateLimit");
 const { speedTest } = require("./middleware/speedTest");
+const { sqlInjectionFilter } = require("./middleware/sqlInjectionFilter");
 const { resolveTarget } = require("./utils/resolveTarget");
 const {
   renderGatewayError,
@@ -52,6 +53,7 @@ app.use(blockedPortPage);
 app.use(listenerStatus);
 app.use(rateLimit);
 app.use(speedTest);
+app.use(sqlInjectionFilter);
 
 app.use((req, res, next) => {
   const host = req.hostname;

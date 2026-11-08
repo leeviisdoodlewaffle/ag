@@ -212,7 +212,14 @@ function renderGatewayError(req, res, statusCode) {
         happened: "The request was incomplete or formatted in a way the gateway could not understand.",
         action: "Check the address and request, then try again.",
       }
-      : statusCode === 502
+      : statusCode === 403
+        ? {
+          title: "Request blocked",
+          subtitle: "The gateway blocked this request.",
+          happened: "The request matched a pattern commonly associated with SQL injection.",
+          action: "Check the request and remove unexpected SQL syntax. If you believe this was blocked by mistake, contact the node operator.",
+        }
+        : statusCode === 502
         ? {
           title: "Service unavailable",
           subtitle: "The gateway could not connect to the app behind this address.",
