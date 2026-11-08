@@ -1,0 +1,20 @@
+services:
+  ahola-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ahola-gateway
+    restart: unless-stopped
+    ports:
+      - "3390:3390"
+      - "8080:8080"
+      - "1111:1111"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - ahola-net
+
+networks:
+  ahola-net:
+    external: true
+    name: ahola-net
